@@ -1,0 +1,49 @@
+name: Build GQAO Pro EXE (Windows)
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-windows-exe:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout du code
+      uses: actions/checkout@v4
+
+    - name: Installation Python 3.11
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Installation PyInstaller
+      run: pip install pyinstaller
+
+    - name: Compilation EXE
+      run: |
+        pyinstaller `
+          --onefile `
+          --windowed `
+          --name "GQAO_Pro_PROMACAB" `
+          --hidden-import tkinter `
+          --hidden-import tkinter.ttk `
+          --hidden-import tkinter.messagebox `
+          --hidden-import tkinter.filedialog `
+          --hidden-import sqlite3 `
+          --hidden-import csv `
+          --clean `
+          GQAO_Pro.py
+
+    - name: Verification du fichier EXE
+      run: |
+        dir dist\
+        echo "EXE cree avec succes."
+
+    - name: Upload de l'EXE
+      uses: actions/upload-artifact@v4
+      with:
+        name: GQAO_Pro_PROMACAB_EXE
+        path: dist\GQAO_Pro_PROMACAB.exe
+        retention-days: 30
